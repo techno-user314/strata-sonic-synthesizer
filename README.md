@@ -1,5 +1,5 @@
 # SoundForge - A Digital Subtractive Synthesizer
-<sup>v0.7.0</sup>
+<sup>v0.7.0</sup>  
 SoundForge is a digital audio synthesizer.
 
 ## Installation

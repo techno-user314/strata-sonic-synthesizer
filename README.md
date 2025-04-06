@@ -34,10 +34,20 @@ Possible bindings include, but are not limited to:
 - Select a modulator to adjust for the currently selected oscillator
 - Change modulator settings[^4]
 
-[^1]: Recording starts when the first note is played, and ends when the recording button is pushed again  
-[^2]: It is also possible to pause the recording playback  
-[^3]: It is possible to adjust the pitch offset in units of cents, steps and octaves
+[^1]: Recording starts when the first note is played, and ends when the recording button is pushed again.  
+[^2]: It is also possible to pause the recording playback.  
+[^3]: It is possible to adjust the pitch offset in units of cents, steps and octaves.
 [^4]: There are several bindings for this that vary by modulator. For example, the low frequancy oscillator two settings: speed and amplitude, but an envelope has four: attack, decay, sustain, release.  
 
 ## Coming Soon
-- [ ] Better documentation!
+- [ ] Better documentation
+
+Rough Update Guideline:
+- [x] 1.0.0-0 Implement in C for better performance
+- [ ] 1.1.0-0 Sync the release of pitch/filter with amp's
+- [ ] 1.1.1-0 Add ability for multiple voices in an oscillator
+- [ ] 1.1.2-0 Add ability to change LFO waveform
+- [ ] 1.1.3-1 Add recorder
+- [ ] 1.1.4-0 Add noise oscillator
+- [ ] 1.1.4-1 Allow for use of decay/sustain in LPF cutoff envelope
+- [ ] 1.1.5-0 Add pitch-determined amplitude

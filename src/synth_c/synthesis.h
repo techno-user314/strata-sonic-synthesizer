@@ -19,43 +19,43 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef SYNTHESIS_H
 #define SYNTHESIS_H
 
-struct Envelope {
+typedef struct Envelope {
     int envAt;
-    float sustain_value;
-    bool releasing;
+    int releasing;
+    float *sustain_value;
 
-    int attack_ms;
-    int decay_ms;
-    float sustain_percent;
-    int release_ms;
-};
+    int *attack_ms;
+    int *decay_ms;
+    float *sustain_percent;
+    int *release_ms;
+} Envelope;
 
-struct LFO {
+typedef struct LFO {
     double lfoAt;
-    int speed_hz;
-    double amp;
-    double percent_effect;
-};
+    int *speed_hz;
+    double *amp;
+    double *percent_effect;
+} LFO;
 
-struct LPF {
-    double[2] in_history;
-    double[2] out_history;
-};
+typedef struct LPF {
+    double in_history[3];
+    double out_history[3];
+} LPF;
 
-struct Oscillator {
+typedef struct Osc {
     int type;
     double oscAt;
     int note;
-    float shift;
-};
+    float *shift;
+} Osc;
 
-void envelope(Envelope *env_vals, double[] samples);
+void envelope(Envelope *env_vals, double *samples);
 
-void lfosc(LFO *lfo_vals, double[] samples);
+void lfosc(LFO *lfo_vals, double *samples);
 
-void lpfilter(LPF *lpf_vals, double[] samples, double[] cutoff_freq_vals);
+void lpfilter(LPF *lpf_vals, double *samples, double *cutoff_freq_vals);
 
-void oscillator(Oscillator *osc_vals, double[] samples,
-                double[] amp_values, double[] pitch_shift_values);
+void oscillator(Osc *osc_vals, double *samples,
+                double *amp_values, double *pitch_shift_values);
 
 #endif

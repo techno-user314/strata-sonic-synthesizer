@@ -1,0 +1,125 @@
+"""
+This is SoundForge: A digital subtractive synthesiser program
+that is semi-polyphonic, and has built-in audio recording and layering.
+
+Copyright (C) 2025  Zach Harwood
+
+This file is part of SoundForge
+
+SoundForge is a free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+"""
+import sys
+import time
+import math
+import struct
+import ctypes
+
+import pyaudio
+from rtmidi.midiutil import open_midiinput
+
+from midi_input import parse_input
+from py_synth import Synth
+
+# Define constants. These should be the same as the ones in constants.h
+BUFFER_SAMPLES = 256
+SAMPLE_RATE = 44100
+CHANNELS = 1
+
+# Declare the C library interface
+synth = ctypes.CDLL("./libcsynth.so")
+
+synth.init.restype = ctypes.POINTER(Synth)
+synth.terminate.argtypes = [ctypes.POINTER(Synth)]
+synth.process_input.argtypes = [ctypes.POINTER(Synth), ctypes.c_int,
+                                ctypes.c_int, ctypes.c_float]
+synth.next_buffer.argtypes = [ctypes.POINTER(Synth),
+                              ctypes.POINTER(ctypes.c_double)]
+
+# Define globals
+soundforge = synth.init()
+streaming = True
+
+
+# Callback functions
+class MidiInputHandler(object):
+    def __init__(self, port):
+        self.port = port
+        self._wallclock = time.time()
+
+    def __call__(self, event, data=None):
+        global streaming
+        message, deltatime = event
+        self._wallclock += deltatime
+        # You can uncomment the following three lines to bind an exit button
+        #if message == [128, 72, 0]:
+        #    streaming = False
+        #else:
+        code, value1, value2 = parse_input(message)
+        synth.process_input(soundforge, code, value1, value2)
+
+def audio_callback(in_data, frame_count, time_info, status):
+    datarray = [0 for _ in range(BUFFER_SAMPLES)]
+    datarray = (ctypes.c_double * BUFFER_SAMPLES)(*datarray)
+    synth.next_buffer(soundforge, datarray)
+
+    buffer = [int(max(-1, min(s, 1)) * 32767) for s in datarray]
+    format_str = '<' + str(BUFFER_SAMPLES) + 'h'
+    data = bytearray(struct.pack(format_str, *buffer))
+
+    # Detect stream complete
+    code = pyaudio.paContinue if streaming else pyaudio.paComplete
+    return bytes(data), code
+
+
+# Main loop
+print("Setting up SoundForge - ")
+print("Opening MIDI device...")
+midiin, port_name = open_midiinput(1)
+midiin.set_callback(MidiInputHandler(port_name))
+
+print("Creating stream...")
+audio = pyaudio.PyAudio()
+stream = audio.open(format=pyaudio.paInt16,
+                    channels=CHANNELS,
+                    rate=SAMPLE_RATE,
+                    output=True,
+                    stream_callback=audio_callback,
+                    frames_per_buffer=BUFFER_SAMPLES)
+
+try:
+    print("Streaming active - ")
+    while stream.is_active():
+        time.sleep(1)
+    streaming = False
+
+except Exception as e:
+    streaming = False
+    print("\nError:", e)
+
+finally:
+    print("\nExiting", end="")
+
+    # Disengage RtMidi
+    midiin.close_port()
+    del midiin
+    print(".", end="")
+
+    # Disengage PyAudio
+    stream.close()
+    audio.terminate()
+    print(".", end="")
+
+    # Free system resources
+    synth.terminate(soundforge)
+    print(".\nShutdown successful. Goodbye!")

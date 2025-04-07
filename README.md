@@ -12,7 +12,7 @@ SoundForge is a digital audio synthesizer designed to allow simple music creatio
 ## Installation
 Here are the steps to install and begin using SoundForge:
 1. Ensure that both Python and a C compiler are installed on your system.
-2. Install the necessary Python libraries with 'pip install rtmidi-python pyaudio'
+2. Install the necessary Python libraries with `pip install rtmidi-python pyaudio`
 3. Clone this repo.
 4. Compile the files in "src/c_synth" into a shared library called "libcsynth".
     - Using GCC on a Linux system, this command would be: `gcc -shared -o libcsynth.so -fPIC control.c synthesis.c`

@@ -12,10 +12,11 @@ SoundForge is a digital audio synthesizer designed to allow simple music creatio
 ## Installation
 Here are the steps to install and begin using SoundForge:
 1. Ensure that both Python and a C compiler are installed on your system.
-1. Clone this repo.
-2. Compile the files in "src/c_synth" into a shared library called "libcsynth".
+2. Install the necessary Python libraries with 'pip install rtmidi-python pyaudio'
+3. Clone this repo.
+4. Compile the files in "src/c_synth" into a shared library called "libcsynth".
     - Using GCC on a Linux system, this command would be: `gcc -shared -o libcsynth.so -fPIC control.c synthesis.c`
-3. Run main.py with a Python interperator running Python 3.11+
+5. Run main.py with a Python interperator running Python 3.11+
 
 ## Usage
 Run main.py with a Python interperater to launch the synthesizer. If you are on a headless Rasperry Pi, it is recommended to have main.py run on startup. SoundForge should automatically interface with any connected MIDI device. SoundForge is setup for usage with a Donner MIDI MK-25 by default, however, all the mappings are adjustable by modifying midi_input.py.

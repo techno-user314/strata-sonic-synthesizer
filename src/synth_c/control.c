@@ -362,6 +362,7 @@ void osc_modify_envelope(Oscillator *osc, int parameter, float new_value) {
             break;
         case ENV_RELEASE:
             *(to_modify->release_ms) = (exp(new_value * 2.85) - 1) / 2 * 500;
+            *(osc->ampEnv->release_ms) = (exp(new_value * 2.85) - 1) / 2 * 500;
             break;
     }
 }

@@ -1,13 +1,13 @@
 # SoundForge - A Digital Subtractive Synthesizer
 <sup>**Version 1.1.0-0**  |  Iteration 1.8.8-e</sup>  
+  
 SoundForge is a digital audio synthesizer designed to allow simple music creation without the need for a full DAW. It can run on a headless Raspberry Pi, and is controlled via MIDI input.
 
 ## Features
 - SoundForge creates sound via subtractive synthesis.
-- There are four distinct, toggleable layers. Each layer has it's own customizable oscillators, effectively acting like four synthesizers that can play together, or seperately.
-- Each layer has the ability to record and play back inputs. While you are playing live on layer 1, the other layers can each be looping a differant harmony that you have pre-recorded.
+- SoundForge currently supports up to 25 voices per layer. In the future, this will be user defined so that it can be customized to the user's computer's architechture capabilities.
+- There are four distinct, toggleable layers. Each layer has it's own customizable oscillators, effectively acting like four seperate synthesizers. This feature can be used to toggle between four setting banks and, in future updates, may be able to loop a background harmony.
 - Every one of the 16 oscillators has it's own filter and waveform selection, along with it's own independant envelopes and modulators for amplitude, pitch shifting, and filter cutoff frequancy.
-- Oscillators react to setting changes in realtime. Even while a recording is playing!
 
 ## Installation
 Here are the steps to install and begin using SoundForge:

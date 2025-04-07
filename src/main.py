@@ -61,12 +61,12 @@ class MidiInputHandler(object):
         global streaming
         message, deltatime = event
         self._wallclock += deltatime
-        # You can uncomment the following three lines to bind an exit button
-        #if message == [128, 72, 0]:
-        #    streaming = False
-        #else:
+        
         code, value1, value2 = parse_input(message)
-        synth.process_input(soundforge, code, value1, value2)
+        if code == 0:
+           streaming = False
+        else:
+            synth.process_input(soundforge, code, value1, value2)
 
 def audio_callback(in_data, frame_count, time_info, status):
     datarray = [0 for _ in range(BUFFER_SAMPLES)]

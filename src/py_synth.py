@@ -35,8 +35,8 @@ class LFO(ctypes.Structure):
                 ("percent_effect", ctypes.POINTER(ctypes.c_double))]
 
 class LPF(ctypes.Structure):
-    _fields_ = [("in_history", (ctypes.c_double * 2)),
-                ("out_history", (ctypes.c_double * 2))]
+    _fields_ = [("in_history", (ctypes.c_double * 3)),
+                ("out_history", (ctypes.c_double * 3))]
 
 class Osc(ctypes.Structure):
     _fields_ = [("type", ctypes.c_int),

@@ -25,6 +25,7 @@ from math import e
 MIDI_TO_A4 = 57
 
 # Action codes. These should be the same as the ones in constants.h
+POWER = 0
 SET_VOLUME = 1
 ADD_NOTE = 2
 RM_NOTE = 3
@@ -51,7 +52,9 @@ MODULATOR_SELECT = 23
 
 # Function to turn raw MIDI codes into action codes
 def parse_input(inpt):
-    if inpt[0] == 176 and inpt[1] == 1:
+    if inpt[0] == 153 and inpt[1] == 59:
+        return POWER, 0, 0
+    elif inpt[0] == 176 and inpt[1] == 1:
         return SET_VOLUME, inpt[1], inpt[2] / 127
     elif inpt[0] == 153 and inpt[1] in [40, 41, 42, 43]:
         return LAYER_SELECT, inpt[1] - 56, inpt[2]

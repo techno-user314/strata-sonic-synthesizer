@@ -57,7 +57,7 @@ def parse_input(inpt):
     elif inpt[0] == 176 and inpt[1] == 1:
         return SET_VOLUME, inpt[1], inpt[2] / 127
     elif inpt[0] == 153 and inpt[1] in [40, 41, 42, 43]:
-        return LAYER_SELECT, inpt[1] - 56, inpt[2]
+        return LAYER_SELECT, inpt[1] - 40, inpt[2]
     elif inpt[1] == 7 and inpt[0] in [184, 185, 186, 187]:
         return LAYER_AMP, inpt[0] - 184, inpt[2] / 127
     elif inpt[1] in [18, 19, 20] and inpt[2] == 127:

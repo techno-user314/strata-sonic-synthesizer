@@ -40,7 +40,7 @@ class LPF(ctypes.Structure):
 class Osc(ctypes.Structure):
     _fields_ = [("type", ctypes.c_int),
                 ("oscAt", ctypes.c_double),
-                ("note", ctypes.c_int),
+                ("note", ctypes.c_int)]
 
 
 class Note(ctypes.Structure):

@@ -33,7 +33,6 @@ typedef struct Envelope {
 typedef struct LFO {
     double lfoAt;
     int *speed_hz;
-    double *amp;
     double *percent_effect;
 } LFO;
 
@@ -46,7 +45,6 @@ typedef struct Osc {
     int type;
     double oscAt;
     int note;
-    float *shift;
 } Osc;
 
 void envelope(Envelope *env_vals, double *samples);

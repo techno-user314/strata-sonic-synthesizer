@@ -44,12 +44,18 @@ Possible bindings include, but are not limited to:
 - [ ] Better documentation
 
 Approximate Update Roadmap:
-- [x] 1.0.0-0 Implement in C for better performance
-- [x] 1.0.0-1 Add exit button binding
-- [x] 1.1.0-0 Sync the release of pitch/filter with amp's
-- [ ] 1.1.1-0 Add ability for multiple voices in an oscillator
-- [ ] 1.1.2-0 Add ability to change LFO waveform
-- [ ] 1.1.3-1 Add recorder
-- [ ] 1.1.4-0 Add noise oscillator
-- [ ] 1.1.4-1 Allow for use of decay/sustain in LPF cutoff envelope
-- [ ] 1.1.5-0 Add pitch-determined amplitude
+- [x] 1.0.0 Make DSPcmath more efficient
+- [x] 1.0.1 Add exit button
+- [x] 1.0.1 Sync the release of pitch/filter with amp's
+- [x] 1.0.2 Fix page bug
+- [x] 1.0.3 Fix what happens when page is changed before note is released
+- [x] 1.0.4 Fix pitch octave shift always going super high freq
+- [x] 1.0.5 Fix LFO amplitude effect
+- [ ] 1.1.0 Add unison
+- [ ] 1.2.0 Add ability to change LFO waveform
+- [ ] 1.2.1 Make voice numbers a constant, not a magic number
+- [ ] 1.3.0 Add recorder
+- [ ] 1.4.0 Add noise oscillator
+- [ ] 1.4.1 Implement more intuitive input mapping
+- [ ] 1.5.0 Add pitch-determined amplitude
+- [ ] 2.0.0 Allow for multithreading

@@ -74,7 +74,6 @@ void envelope(Envelope *env_vals, double *samples) {
 void lfosc(LFO *lfo_vals, double *samples) {
     if (*(lfo_vals->speed_hz) == 0) { return; }
     else if (*(lfo_vals->percent_effect) == 0) { return; }
-    else if (*(lfo_vals->amp) == 0) { return; }
 
     double change_per_step = *(lfo_vals->speed_hz) / (double)SAMPLE_RATE;
     double s = lfo_vals->lfoAt;
@@ -83,8 +82,9 @@ void lfosc(LFO *lfo_vals, double *samples) {
     for (sample = 0; sample < BUFFER_SAMPLES; sample++) {
         s = fmod((s + change_per_step), 1.0);
         wave = cos(2 * M_PI * s);
-        samples[sample] = (wave + 1) * *(lfo_vals->amp) / 2;
+        samples[sample] = (wave + 1) / 2;
         samples[sample] *= *(lfo_vals->percent_effect);
+        samples[sample] += 1 - *(lfo_vals->percent_effect);
     }
     lfo_vals->lfoAt = s + change_per_step;
 }
@@ -142,8 +142,7 @@ void oscillator(Osc *osc_vals, double *samples,
     int sample;
     double note_step, hertz, change_per_step;
     for (sample = 0; sample < BUFFER_SAMPLES; sample++) {
-        note_step = *(osc_vals->shift) * pitch_shift_values[sample];
-        note_step += osc_vals->note;
+        note_step = pitch_shift_values[sample] + osc_vals->note;
         hertz = 440 * pow(2, (note_step / 12));
         change_per_step = hertz / SAMPLE_RATE;
 

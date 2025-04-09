@@ -31,7 +31,6 @@ class Envelope(ctypes.Structure):
 class LFO(ctypes.Structure):
     _fields_ = [("lfoAt", ctypes.c_double),
                 ("speed_hz", ctypes.POINTER(ctypes.c_int)),
-                ("amp", ctypes.POINTER(ctypes.c_double)),
                 ("percent_effect", ctypes.POINTER(ctypes.c_double))]
 
 class LPF(ctypes.Structure):
@@ -41,8 +40,7 @@ class LPF(ctypes.Structure):
 class Osc(ctypes.Structure):
     _fields_ = [("type", ctypes.c_int),
                 ("oscAt", ctypes.c_double),
-                ("note", ctypes.c_int),
-                ("shift", ctypes.POINTER(ctypes.c_float))]
+                ("note", ctypes.c_int)]
 
 
 class Note(ctypes.Structure):

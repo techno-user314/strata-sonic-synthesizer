@@ -120,7 +120,6 @@ void initialize_note(Note *note_ptr, Oscillator *parent_osc, int note_num) {
     note_ptr->osc->type = parent_osc->oscType;
     note_ptr->osc->oscAt = 0.0;
     note_ptr->osc->note = note_num;
-    note_ptr->osc->shift = &(parent_osc->pitch);
 }
 
 void destroy_note(Note *note_ptr) {
@@ -213,8 +212,6 @@ void initialize_osc(Oscillator **osc) {
     (*osc)->ampLFO->lfoAt = 0;
     (*osc)->ampLFO->speed_hz = malloc(sizeof(int));
     *((*osc)->ampLFO->speed_hz) = 0;
-    (*osc)->ampLFO->amp = malloc(sizeof(double));
-    *((*osc)->ampLFO->amp) = 1.0;
     (*osc)->ampLFO->percent_effect = malloc(sizeof(double));
     *((*osc)->ampLFO->percent_effect) = 0.0;
 
@@ -241,8 +238,6 @@ void initialize_osc(Oscillator **osc) {
     (*osc)->pitchLFO->lfoAt = 0;
     (*osc)->pitchLFO->speed_hz = malloc(sizeof(int));
     *((*osc)->pitchLFO->speed_hz) = 0;
-    (*osc)->pitchLFO->amp = malloc(sizeof(double));
-    *((*osc)->pitchLFO->amp) = 1.0;
     (*osc)->pitchLFO->percent_effect = malloc(sizeof(double));
     *((*osc)->pitchLFO->percent_effect) = 0.0;
 
@@ -271,7 +266,6 @@ void destroy_osc(Oscillator *osc) {
     free(osc->ampEnv);
 
     free(osc->ampLFO->speed_hz);
-    free(osc->ampLFO->amp);
     free(osc->ampLFO->percent_effect);
     free(osc->ampLFO);
 
@@ -282,7 +276,6 @@ void destroy_osc(Oscillator *osc) {
     free(osc->pitchEnv);
 
     free(osc->pitchLFO->speed_hz);
-    free(osc->pitchLFO->amp);
     free(osc->pitchLFO->percent_effect);
     free(osc->pitchLFO);
 
@@ -329,6 +322,24 @@ void osc_rm_note(Oscillator *osc, int in_note) {
             osc->notes[i] = NULL;
             osc->input_map[i] = -1;
             break;
+        }
+    }
+}
+
+void osc_end_notes(Oscillator *osc) {
+    int fake_input;
+    for (int i = 0; i < 25; i++) {
+        fake_input = osc->input_map[i];
+        if (fake_input != -1) {
+            note_start_release(osc->notes[i]);
+            for (int j = 0; j < 10; j++) {
+                if (osc->releasingNotes[j] == NULL) {
+                    osc->releasingNotes[j] = osc->notes[i];
+                    break;
+                }
+            }
+            osc->notes[i] = NULL;
+            osc->input_map[i] = -1;
         }
     }
 }
@@ -514,6 +525,12 @@ void destroy_page(Page *page) {
     free(page);
 }
 
+void page_end_notes(Page *layer) {
+    for (int i = 0; i < 4; i++) {
+        osc_end_notes(layer->oscs[i]);
+    }
+}
+
 void page_process_input(Page *layer, int action, int button, float value) {
     Oscillator *osc;
     switch (action) {
@@ -622,6 +639,7 @@ void process_input(Synth *synth, int action, int button, float value) {
             synth->amp = value;
             break;
         case LAYER_SELECT:
+            page_end_notes(synth->layers[synth->selectedLayer]);
             synth->selectedLayer = button;
             break;
         case LAYER_AMP:

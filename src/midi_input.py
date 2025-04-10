@@ -19,7 +19,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-
 from math import e
 
 MIDI_TO_A4 = 57
@@ -49,54 +48,80 @@ FILTER_FREQ = 20
 FILTER_AMP = 21
 FILTER_PARAM = 22
 MODULATOR_SELECT = 23
+UNISON = 24
 
 # Function to turn raw MIDI codes into action codes
-def parse_input(inpt):
-    if inpt[0] == 153 and inpt[1] == 59:
-        return POWER, 0, 0
-    elif inpt[0] == 176 and inpt[1] == 1:
-        return SET_VOLUME, inpt[1], inpt[2] / 127
-    elif inpt[0] == 153 and inpt[1] in [40, 41, 42, 43]:
-        return LAYER_SELECT, inpt[1] - 40, inpt[2]
-    elif inpt[1] == 7 and inpt[0] in [184, 185, 186, 187]:
-        return LAYER_AMP, inpt[0] - 184, inpt[2] / 127
-    elif inpt[1] in [18, 19, 20] and inpt[2] == 127:
-        return LAYER_REC, inpt[1] - 18, inpt[2]
-    elif inpt[1] == 15 and inpt[2] == 127:
-        return OSC_TYPE, inpt[1], inpt[2]
-    elif inpt[1] in [16, 17] and inpt[2] == 127:
-        return OSC_OCTAVE, (inpt[1] - 16) * 2 - 1, inpt[2]
-    elif inpt[0] == 153 and inpt[1] in [36, 37, 38, 39]:
-        return OSC_MUTE, inpt[1] - 36, inpt[2]
-    elif inpt[0] == 153 and inpt[1] in [44, 45, 46, 47]:
-        return OSC_SELECT, inpt[1] - 44, inpt[2]
-    elif inpt[0] == 176 and inpt[1] in [30, 31, 32, 33]:
-        return OSC_AMP, inpt[1] - 30, inpt[2] / 127
-    elif inpt[0] == 224 and inpt[2] != 64:
-        return OSC_PITCH, -1, int((inpt[2] / 127 - 0.5) * 24)
-    elif inpt[0] == 176 and inpt[1] in [34, 35, 36, 37]:
-        return OSC_PITCH, inpt[1] - 34, inpt[2]
-    elif inpt[0] == 153 and inpt[1] in [49, 50, 51]:
-        return MODULATOR_SELECT, inpt[1] - 49, inpt[2]
-    elif inpt[0] == 176 and inpt[1] == 7:
-        return ENV_ATTACK, inpt[0] - 176, inpt[2] / 127
-    elif inpt[0] == 177 and inpt[1] == 7:
-        return ENV_DECAY, inpt[0] - 176, inpt[2] / 127
-    elif inpt[0] == 178 and inpt[1] == 7:
-        return ENV_SUSTAIN, inpt[0] - 176, inpt[2] / 127
-    elif inpt[0] == 179 and inpt[1] == 7:
-        return ENV_RELEASE, inpt[0] - 176, inpt[2] / 127
-    elif inpt[0] == 180 and inpt[1] == 7:
-        return LFO_AMP, inpt[0], inpt[2] / 127
-    elif inpt[0] == 181 and inpt[1] == 7:
-        return LFO_SPEED, inpt[0], inpt[2] * (30 / 127)
-    elif inpt[0] == 176 and inpt[1] in [38, 39, 40, 41]:
-        return FILTER_FREQ, inpt[1] - 38, (inpt[2] / 127) ** e
-    elif inpt[0] == 144:
-        return ADD_NOTE, inpt[1] - MIDI_TO_A4, inpt[2]
-    elif inpt[0] == 128:
-        return RM_NOTE, inpt[1], inpt[2]
-    elif inpt[2] != 0 and inpt[0] != 137:
-        if not (inpt[0] == 224 and inpt[2] == 64):
-            #print(f"No known action for {inpt}")
-            return -1, 0, 0
+def parse_input(msg):
+    match msg:
+        case [153, 59, _]: 
+            return POWER, -1, -1
+
+        case [176, 1, value]: 
+            return SET_VOLUME, -1, value / 127
+
+        case [153, button, _] if button in [40, 41, 42, 43]:
+            return LAYER_SELECT, button - 40, -1
+
+        case [slider, 7, value] if slider in [184, 185, 186, 187]:
+            return LAYER_AMP, slider - 184, value / 127
+
+        case [176, 15, 127]:
+            return OSC_TYPE, -1, -1
+
+        case [176, button, 127] if button in [16, 17]:
+            return OSC_OCTAVE, (button - 16) * 2 - 1, -1
+
+        case [153, button, _] if button in [36, 37, 38, 39]:
+            return OSC_MUTE, button - 36, -1
+
+        case [153, 48, _]:
+            return OSC_MUTE, 4, -1
+
+        case [153, button, _] if button in [44, 45, 46, 47]:
+            return OSC_SELECT, button - 44, -1
+
+        case [slider, 7, value] if slider in [176, 177, 178, 179]:
+            return OSC_AMP, slider - 176, value / 127
+
+        case [224, 0, value] if value != 64:
+            return OSC_PITCH, 4, int((value / 127 - 0.5) * 24)
+
+        case [176, knob, value] if knob in [30, 31, 32, 33]:
+            return OSC_PITCH, knob - 30, value
+
+        case [153, button, _] if button in [49, 50, 51]:
+            return MODULATOR_SELECT, button - 49, -1
+
+        case [180, 7, value]:
+            return ENV_ATTACK, -1, value / 127
+
+        case [181, 7, value]:
+            return ENV_DECAY, -1, value / 127
+
+        case [182, 7, value]:
+            return ENV_SUSTAIN, -1, value / 127
+
+        case [183, 7, value]:
+            return ENV_RELEASE, -1, value / 127
+
+        case [176, 34, value]:
+            return LFO_AMP, -1, value / 127
+
+        case [176, 35, value]:
+            return LFO_SPEED, -1, value * 30 / 127
+
+        case [176, 37, value]:
+            return UNISON, -1, value
+
+        case [176, knob, value] if knob in [38, 39, 40, 41]:
+            return FILTER_FREQ, knob - 38, (value / 127) ** e
+
+        case [144, button, velocity]:
+            return ADD_NOTE, button - MIDI_TO_A4, velocity
+
+        case [128, button, _]:
+            return RM_NOTE, button, -1
+
+        case _:
+            #print(f"No known action for {msg}")
+            return -1, -1, -1

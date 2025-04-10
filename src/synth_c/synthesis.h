@@ -54,6 +54,7 @@ void lfosc(LFO *lfo_vals, double *samples);
 void lpfilter(LPF *lpf_vals, double *samples, double *cutoff_freq_vals);
 
 void oscillator(Osc *osc_vals, double *samples,
-                double *amp_values, double *pitch_shift_values);
+                double *amp_values, double *pitch_shift_values,
+                float unison);
 
 #endif

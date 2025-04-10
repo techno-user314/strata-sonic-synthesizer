@@ -49,9 +49,8 @@ typedef struct Note {
 
 typedef struct Oscillator {
     int noteCount; // 0
-    Note *notes[25]; // {NULL}
-    Note *releasingNotes[25]; // {NULL}
-    int input_map[25]; // {-1}
+    Note *notes[VOICES]; // {NULL}
+    int input_map[VOICES]; // {-1}
 
     float unison_cents; // 0
     int oscType; // 0
@@ -205,9 +204,8 @@ void initialize_osc(Oscillator **osc) {
     *osc = malloc(sizeof(Oscillator));
 
     (*osc)->noteCount = 0;
-    for (int i=0; i < 25; i++) {
+    for (int i=0; i < VOICES; i++) {
         (*osc)->notes[i] = NULL;
-        (*osc)->releasingNotes[i] = NULL;
         (*osc)->input_map[i] = -1;
     }
 
@@ -309,19 +307,17 @@ void destroy_osc(Oscillator *osc) {
     free(osc->filterEnv);
 
     // Check for and destroy unreleased notes
-    for (int i=0; i < 25; i++) {
+    for (int i=0; i < VOICES; i++) {
         if (osc->notes[i] != NULL) {
+            destroy_note(osc->notes[i]);
             free(osc->notes[i]);
-        }
-        if (osc->releasingNotes[i] != NULL) {
-            free(osc->releasingNotes[i]);
         }
     }
     free(osc);
 }
 
 void osc_add_note(Oscillator *osc, int note) {
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < VOICES; i++) {
         if (osc->notes[i] == NULL) {
             osc->notes[i] = malloc(sizeof(Note));
             initialize_note(osc->notes[i], osc, note);
@@ -333,16 +329,9 @@ void osc_add_note(Oscillator *osc, int note) {
 }
 
 void osc_rm_note(Oscillator *osc, int in_note) {
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < VOICES; i++) {
         if (osc->input_map[i] == in_note) {
             note_start_release(osc->notes[i]);
-            for (int j = 0; j < 10; j++) {
-                if (osc->releasingNotes[j] == NULL) {
-                    osc->releasingNotes[j] = osc->notes[i];
-                    break;
-                }
-            }
-            osc->notes[i] = NULL;
             osc->input_map[i] = -1;
             break;
         }
@@ -351,17 +340,10 @@ void osc_rm_note(Oscillator *osc, int in_note) {
 
 void osc_end_notes(Oscillator *osc) {
     int fake_input;
-    for (int i = 0; i < 25; i++) {
+    for (int i = 0; i < VOICES; i++) {
         fake_input = osc->input_map[i];
         if (fake_input != -1) {
             note_start_release(osc->notes[i]);
-            for (int j = 0; j < 10; j++) {
-                if (osc->releasingNotes[j] == NULL) {
-                    osc->releasingNotes[j] = osc->notes[i];
-                    break;
-                }
-            }
-            osc->notes[i] = NULL;
             osc->input_map[i] = -1;
         }
     }
@@ -479,11 +461,11 @@ void osc_process_input(Oscillator *osc, int action, int button, float value) {
 }
 
 void osc_next_buffer(Oscillator *osc, double *samples) {
-    for (int i=0; i < 25; i++) {
-        if (osc->releasingNotes[i] != NULL && osc->releasingNotes[i]->isdone) {
-            destroy_note(osc->releasingNotes[i]);
-            free(osc->releasingNotes[i]);
-            osc->releasingNotes[i] = NULL;
+    for (int i=0; i < VOICES; i++) {
+        if (osc->notes[i] != NULL && osc->notes[i]->isdone) {
+            destroy_note(osc->notes[i]);
+            free(osc->notes[i]);
+            osc->notes[i] = NULL;
             osc->noteCount -= 1;
         }
     }
@@ -491,25 +473,15 @@ void osc_next_buffer(Oscillator *osc, double *samples) {
     if (osc->noteCount == 0 || *(osc->ampEnv->sustain_percent) == 0){ return; }
 
     double temp_samples[BUFFER_SAMPLES] = {0};
-    for (int i=0; i < 25; i++) {
+    for (int i=0; i < VOICES; i++) {
         if (osc->notes[i] != NULL) {
             note_next_buffer(osc->notes[i], temp_samples);
-            for (int j=0; j < 256; j++) {
+            for (int j=0; j < BUFFER_SAMPLES; j++) {
                 samples[j] += temp_samples[j];
                 temp_samples[j] = 0.0;
             }
         }
     }
-    for (int i=0; i < 25; i++) {
-        if (osc->releasingNotes[i] != NULL) {
-            note_next_buffer(osc->releasingNotes[i], temp_samples);
-            for (int j=0; j < 256; j++) {
-                samples[j] += temp_samples[j];
-                temp_samples[j] = 0.0;
-            }
-        }
-    }
-
     if (osc->noteCount > 0) {
         float note_weight = 1 / *(osc->ampEnv->sustain_percent);
         note_weight *= (4 > osc->noteCount) ? 4 : osc->noteCount;

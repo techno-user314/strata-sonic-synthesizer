@@ -30,11 +30,7 @@ from rtmidi.midiutil import open_midiinput
 
 from midi_input import parse_input
 from py_synth import Synth
-
-# Define constants. These should be the same as the ones in constants.h
-BUFFER_SAMPLES = 256
-SAMPLE_RATE = 44100
-CHANNELS = 1
+from constants import BUFFER_SAMPLES, SAMPLE_RATE
 
 # Declare the C library interface
 synth = ctypes.CDLL("./libcsynth.so")
@@ -47,6 +43,7 @@ synth.next_buffer.argtypes = [ctypes.POINTER(Synth),
                               ctypes.POINTER(ctypes.c_double)]
 
 # Define globals
+CHANNELS = 1
 soundforge = synth.init()
 streaming = True
 

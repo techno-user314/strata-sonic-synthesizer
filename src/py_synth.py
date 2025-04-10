@@ -20,6 +20,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
 import ctypes
 
+VOICES = 12 # Must match constants.h VOICES
+
 class Envelope(ctypes.Structure):
     _fields_ = [("releasing", ctypes.c_int),
                 ("sustain_value", ctypes.POINTER(ctypes.c_float)),
@@ -58,9 +60,8 @@ class Note(ctypes.Structure):
 
 class Oscillator(ctypes.Structure):
     _fields_ = [("noteCount", ctypes.c_int),
-                ("notes", (ctypes.POINTER(Note) * 25)),
-                ("releasingNotes", (ctypes.POINTER(Note) * 25)),
-                ("input_map", (ctypes.c_int * 25)),
+                ("notes", (ctypes.POINTER(Note) * VOICES)),
+                ("input_map", (ctypes.c_int * VOICES)),
                 ("unison_cents", ctypes.c_float),
                 ("oscType", ctypes.c_int),
                 ("selectedMod", ctypes.c_int),

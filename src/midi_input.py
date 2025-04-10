@@ -37,7 +37,10 @@ def parse_input(msg):
 
         case [slider, 7, value] if slider in [184, 185, 186, 187]:
             return LAYER_AMP, slider - 184, value / 127
-
+        
+        case [176, button, 127] if button in [18, 19, 20]:
+            return LAYER_REC, button - 18, -1
+            
         case [176, 15, 127]:
             return OSC_TYPE, -1, -1
 

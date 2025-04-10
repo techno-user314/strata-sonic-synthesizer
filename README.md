@@ -1,5 +1,5 @@
 # SoundForge - A Digital Subtractive Synthesizer
-<sup>**Version 1.0.5**  |  Iteration 1.8.8-19 </sup>  
+<sup>**Version 1.1.1**  |  Iteration 1.8.9-20 </sup>  
   
 SoundForge is a digital audio synthesizer designed to allow simple music creation without the need for a full DAW. It can run on a headless Raspberry Pi, and is controlled via MIDI input.
 
@@ -51,11 +51,12 @@ Approximate Update Roadmap:
 - [x] 1.0.3 Fix what happens when page is changed before note is released
 - [x] 1.0.4 Fix pitch octave shift always going super high freq
 - [x] 1.0.5 Fix LFO amplitude effect
-- [ ] 1.1.0 Add unison
-- [ ] 1.2.0 Add ability to change LFO waveform
-- [ ] 1.2.1 Make voice numbers a constant, not a magic number
-- [ ] 1.3.0 Add recorder
-- [ ] 1.4.0 Add noise oscillator
-- [ ] 1.4.1 Implement more intuitive input mapping
-- [ ] 1.5.0 Add pitch-determined amplitude
+- [x] 1.1.0 Add unison
+- [x] 1.1.1 Clean up input processing method
+- [ ] 1.1.2 Make voice numbers a constant, not a magic number
+- [ ] 1.2.0 Add recorder
+- [ ] 1.3.0 Add noise oscillator
+- [ ] 1.3.1 Implement more intuitive input mapping
+- [ ] 1.4.0 Add pitch-determined amplitude
+- [ ] 1.5.0 Add support for stereo/panning
 - [ ] 2.0.0 Allow for multithreading

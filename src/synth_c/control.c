@@ -30,6 +30,7 @@ Struct typedefs
 */
 typedef struct Note {
     int note; // 0
+    float *unison;
 
     Envelope *ampEnv;
     LFO *ampLFO;
@@ -39,7 +40,8 @@ typedef struct Note {
     LPF *lpfilter;
     Envelope *filterEnv;
 
-    Osc *osc;
+    Osc *osc1;
+    Osc *osc2;
 
     int releasing; // false
     int isdone; // false
@@ -51,6 +53,7 @@ typedef struct Oscillator {
     Note *releasingNotes[25]; // {NULL}
     int input_map[25]; // {-1}
 
+    float unison_cents; // 0
     int oscType; // 0
     int selectedMod; // 0
 
@@ -89,6 +92,7 @@ Note functions
 void initialize_note(Note *note_ptr, Oscillator *parent_osc, int note_num) {
     // Initialize Note's members
     note_ptr->note = 0;
+    note_ptr->unison = &(parent_osc->unison_cents);
 
     note_ptr->ampEnv = malloc(sizeof(Envelope));
     note_ptr->ampLFO = malloc(sizeof(LFO));
@@ -98,7 +102,8 @@ void initialize_note(Note *note_ptr, Oscillator *parent_osc, int note_num) {
     note_ptr->lpfilter = malloc(sizeof(LPF));
     note_ptr->filterEnv = malloc(sizeof(Envelope));
 
-    note_ptr->osc = malloc(sizeof(Osc));
+    note_ptr->osc1 = malloc(sizeof(Osc));
+    note_ptr->osc2 = malloc(sizeof(Osc));
 
     note_ptr->releasing = 0;
     note_ptr->isdone = 0;
@@ -116,10 +121,14 @@ void initialize_note(Note *note_ptr, Oscillator *parent_osc, int note_num) {
         note_ptr->lpfilter->out_history[i] = 0.0;
     }
 
-    // Initialize osc's members
-    note_ptr->osc->type = parent_osc->oscType;
-    note_ptr->osc->oscAt = 0.0;
-    note_ptr->osc->note = note_num;
+    // Initialize oscs' members
+    note_ptr->osc1->type = parent_osc->oscType;
+    note_ptr->osc1->oscAt = 0.0;
+    note_ptr->osc1->note = note_num;
+
+    note_ptr->osc2->type = parent_osc->oscType;
+    note_ptr->osc2->oscAt = 0.0;
+    note_ptr->osc2->note = note_num;
 }
 
 void destroy_note(Note *note_ptr) {
@@ -131,7 +140,8 @@ void destroy_note(Note *note_ptr) {
     free(note_ptr->lpfilter);
     free(note_ptr->filterEnv);
 
-    free(note_ptr->osc);
+    free(note_ptr->osc1);
+    free(note_ptr->osc2);
 }
 
 void note_start_release(Note *note_obj) {
@@ -168,7 +178,19 @@ void note_next_buffer(Note *note_ptr, double *samples) {
         pitch_env[i] *= pitch_lfo[i];
     }
 
-    oscillator(note_ptr->osc, samples, amp_env, pitch_env);
+    double temp_samples[BUFFER_SAMPLES];
+    if (note_ptr->unison != 0) {
+        oscillator(note_ptr->osc1,
+                   samples, amp_env, pitch_env,  *(note_ptr->unison));
+        oscillator(note_ptr->osc2,
+                   temp_samples, amp_env, pitch_env, -*(note_ptr->unison));
+        for (int i=0; i < BUFFER_SAMPLES; i++) {
+            samples[i] += temp_samples[i];
+            samples[i] /= 2;
+        }
+    } else {
+        oscillator(note_ptr->osc1, samples, amp_env, pitch_env, 0.0);
+    }
     lpfilter(note_ptr->lpfilter, samples, filter_env);
     if (note_ptr->releasing && amp_env[BUFFER_SAMPLES-1] == 0) {
         note_ptr->isdone = 1;
@@ -189,6 +211,7 @@ void initialize_osc(Oscillator **osc) {
         (*osc)->input_map[i] = -1;
     }
 
+    (*osc)->unison_cents = 0.0;
     (*osc)->oscType = 0;
     (*osc)->selectedMod = 0;
 
@@ -417,7 +440,7 @@ void osc_process_input(Oscillator *osc, int action, int button, float value) {
             osc->pitch += osc->pitchSteps + osc->pitchCents;
             break;
         case OSC_PITCH:
-            if (button == -1) {
+            if (button == 4) {
                 osc->pitchSteps = value;
             } else {
                 osc->pitchCents = value / 100;
@@ -448,6 +471,9 @@ void osc_process_input(Oscillator *osc, int action, int button, float value) {
             break;
         case FILTER_FREQ:
             osc->filter = MAX_CUTOFF - value * MAX_CUTOFF;
+            break;
+        case UNISON:
+            osc->unison_cents = value / 100;
             break;
     }
 }
@@ -555,14 +581,18 @@ void page_process_input(Page *layer, int action, int button, float value) {
             layer->selectedOsc = button;
             break;
         case OSC_MUTE:
-            layer->unmuted[button] = !layer->unmuted[button];
+            if (button == 4) {
+                layer->unmuted[layer->selectedOsc] = !layer->unmuted[layer->selectedOsc];
+            } else {
+                layer->unmuted[button] = !layer->unmuted[button];
+            }
             break;
         case OSC_AMP:
             osc = layer->oscs[button];
             osc_process_input(osc, action, button, value);
             break;
         case OSC_PITCH:
-            if (button != -1) {
+            if (button != 4) {
                 osc = layer->oscs[button];
                 osc_process_input(osc, action, button, value);
             } else {

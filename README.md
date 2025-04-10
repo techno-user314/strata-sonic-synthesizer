@@ -1,5 +1,5 @@
 # SoundForge - A Digital Subtractive Synthesizer
-<sup>**Version 1.1.2**  |  Iteration 1.8.10.20 </sup>  
+<sup>**Version 1.1.3**  |  Iteration 1.8.10.21 </sup>  
   
 SoundForge is a digital audio synthesizer designed to allow simple music creation without the need for a full DAW. It can run on a headless Raspberry Pi, and is controlled via MIDI input.
 

@@ -17,6 +17,9 @@ Here are the steps to install and begin using SoundForge:
 4. Compile the files in "src/c_synth" into a shared library called "libcsynth".
     - Using GCC on a Linux system, this command would be: `gcc -shared -o libcsynth.so -fPIC control.c synthesis.c`
 5. Run main.py with a Python interperator running Python 3.11+
+> [!NOTE]
+> SoundForge uses PortAudio19 as the audio interace. If Python is throwing exceptions related to pyaudio, it may be fixed by installing PortAudio19.
+> On Linux systems: `sudo apt install portaudio19-dev`
 
 ## Usage
 Run main.py with a Python interperater to launch the synthesizer. If you are on a headless Rasperry Pi, it is recommended to have main.py run on startup. SoundForge should automatically interface with any connected MIDI device. SoundForge is setup for usage with a Donner MIDI MK-25 by default, however, all the mappings are adjustable by modifying midi_input.py.
@@ -41,7 +44,7 @@ Possible bindings include, but are not limited to:
 [^4]: There are several bindings for this that vary by modulator. For example, the low frequancy oscillator two settings: speed and amplitude, but an envelope has four: attack, decay, sustain, release.  
 
 ## Coming Soon
-- [ ] Better documentation
+- [ ] Better usage documentation
 
 Approximate Update Roadmap:
 - [x] 1.0.0 Make DSPcmath more efficient

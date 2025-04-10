@@ -53,7 +53,7 @@ Approximate Update Roadmap:
 - [x] 1.0.5 Fix LFO amplitude effect
 - [x] 1.1.0 Add unison
 - [x] 1.1.1 Clean up input processing method
-- [ ] 1.1.2 Make voice numbers a constant, not a magic number
+- [x] 1.1.2 Make voice numbers a constant, not a magic number
 - [ ] 1.2.0 Add recorder
 - [ ] 1.3.0 Add noise oscillator
 - [ ] 1.3.1 Implement more intuitive input mapping

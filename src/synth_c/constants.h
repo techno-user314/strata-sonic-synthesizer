@@ -51,5 +51,6 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define FILTER_AMP 21
 #define FILTER_PARAM 22
 #define MODULATOR_SELECT 23
+#define UNISON 24
 
 #endif

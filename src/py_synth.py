@@ -45,6 +45,7 @@ class Osc(ctypes.Structure):
 
 class Note(ctypes.Structure):
     _fields_ = [("note", ctypes.c_int),
+                ("unison", ctypes.POINTER(ctypes.c_float)),
                 ("ampEnv", ctypes.POINTER(Envelope)),
                 ("ampLFO", ctypes.POINTER(LFO)),
                 ("pitchEnv", ctypes.POINTER(Envelope)),
@@ -60,6 +61,7 @@ class Oscillator(ctypes.Structure):
                 ("notes", (ctypes.POINTER(Note) * 25)),
                 ("releasingNotes", (ctypes.POINTER(Note) * 25)),
                 ("input_map", (ctypes.c_int * 25)),
+                ("unison_cents", ctypes.c_float),
                 ("oscType", ctypes.c_int),
                 ("selectedMod", ctypes.c_int),
                 ("amp", ctypes.c_float),

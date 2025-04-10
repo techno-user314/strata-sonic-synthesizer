@@ -137,12 +137,13 @@ void lpfilter(LPF *lpf_vals, double *samples, double *cutoff_freq_vals) {
 
 //samples is just any initialized array of size BUFFER_SAMPLES
 void oscillator(Osc *osc_vals, double *samples,
-                double *amp_values, double *pitch_shift_values) {
+                double *amp_values, double *pitch_shift_values,
+                float unison) {
     double s;
     int sample;
     double note_step, hertz, change_per_step;
     for (sample = 0; sample < BUFFER_SAMPLES; sample++) {
-        note_step = pitch_shift_values[sample] + osc_vals->note;
+        note_step = pitch_shift_values[sample] + osc_vals->note + unison;
         hertz = 440 * pow(2, (note_step / 12));
         change_per_step = hertz / SAMPLE_RATE;
 

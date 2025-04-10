@@ -65,7 +65,7 @@ class MidiInputHandler(object):
         code, value1, value2 = parse_input(message)
         if code == 0:
            streaming = False
-        else:
+        elif code != -1:
             synth.process_input(soundforge, code, value1, value2)
 
 def audio_callback(in_data, frame_count, time_info, status):
@@ -73,6 +73,7 @@ def audio_callback(in_data, frame_count, time_info, status):
     datarray = (ctypes.c_double * BUFFER_SAMPLES)(*datarray)
     synth.next_buffer(soundforge, datarray)
 
+    # Convert audio samples from unsigned double to 16-bit signed integer
     buffer = [int(max(-1, min(s, 1)) * 32767) for s in datarray]
     format_str = '<' + str(BUFFER_SAMPLES) + 'h'
     data = bytearray(struct.pack(format_str, *buffer))

@@ -24,7 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #define BUFFER_SAMPLES 256 // Number of samples in one buffer of audio
 #define SAMPLE_RATE 44100 // Sampling rate of the audio
 #define VOICES 12 // Max number of voices that a layer can have
-
+#define REC_MAX_INPUTS 100 // Max number of inputs that can be recorded
 #define MIDI_TO_A4 57 // MIDI input that corrosponds to A4
 #define MAX_CUTOFF 10000 // Maximum filter cutoff frequancy
 #define MIN_CUTOFF 250 // Minimun filter cutoff frequancy

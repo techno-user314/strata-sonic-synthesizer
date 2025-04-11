@@ -29,17 +29,16 @@ import pyaudio
 from rtmidi.midiutil import open_midiinput
 
 from midi_input import parse_input
-from py_synth import Synth
 from constants import BUFFER_SAMPLES, SAMPLE_RATE
 
 # Declare the C library interface
 synth = ctypes.CDLL("./libcsynth.so")
 
-synth.init.restype = ctypes.POINTER(Synth)
-synth.terminate.argtypes = [ctypes.POINTER(Synth)]
-synth.process_input.argtypes = [ctypes.POINTER(Synth), ctypes.c_int,
+synth.init.restype = ctypes.c_void_p
+synth.terminate.argtypes = [ctypes.c_void_p]
+synth.process_input.argtypes = [ctypes.c_void_p, ctypes.c_int,
                                 ctypes.c_int, ctypes.c_float]
-synth.next_buffer.argtypes = [ctypes.POINTER(Synth),
+synth.next_buffer.argtypes = [ctypes.c_void_p,
                               ctypes.POINTER(ctypes.c_double)]
 
 # Define globals

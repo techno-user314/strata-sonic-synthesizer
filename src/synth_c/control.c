@@ -24,6 +24,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "constants.h"
 #include "synthesis.h"
+#include "recorder.h"
 
 /*
 Struct typedefs
@@ -73,9 +74,14 @@ typedef struct Oscillator {
 
 typedef struct Page {
     float amp; // 1
-    Oscillator *oscs[4]; // {Oscillator}
-    int unmuted[4]; // [true, true, true, true]
     int selectedOsc; // 0
+    int recording; // false
+    int playing; // false
+
+    Oscillator *oscs[4];
+    int unmuted[4]; // [true, true, true, true]
+
+    Recorder *recorder;
 } Page;
 
 typedef struct Synth {
@@ -504,6 +510,8 @@ void initialize_page(Page **page) {
         (*page)->unmuted[i] = 1;
     }
     (*page)->selectedOsc = 0;
+    (*page)->recording = 0;
+    (*page)->playing = 0;
 
     Oscillator *osc1, *osc2, *osc3, *osc4;
     initialize_osc(&osc1);
@@ -514,12 +522,20 @@ void initialize_page(Page **page) {
     (*page)->oscs[1] = osc2;
     (*page)->oscs[2] = osc3;
     (*page)->oscs[3] = osc4;
+
+    (*page)->recorder = malloc(sizeof(Recorder));
+    initialize_recorder((*page)->recorder);
 }
 
 void destroy_page(Page *page) {
+    // Free oscillators
     for (int i=0; i < 4; i++) {
         destroy_osc(page->oscs[i]);
     }
+    // Free the recorder
+    clear_recorder(page->recorder);
+    free(page->recorder);
+    // Free page variables
     free(page);
 }
 
@@ -533,6 +549,7 @@ void page_process_input(Page *layer, int action, int button, float value) {
     Oscillator *osc;
     switch (action) {
         case ADD_NOTE:
+            recorder_record(layer->recorder, action, button);
             for (int i = 0; i < 4; i++) {
                 if (layer->unmuted[i]) {
                     osc = layer->oscs[i];
@@ -541,6 +558,7 @@ void page_process_input(Page *layer, int action, int button, float value) {
             }
             break;
         case RM_NOTE:
+            recorder_record(layer->recorder, action, button);
             for (int i = 0; i < 4; i++) {
                 osc = layer->oscs[i];
                 osc_process_input(osc, action, button, value);
@@ -548,6 +566,17 @@ void page_process_input(Page *layer, int action, int button, float value) {
             break;
         case LAYER_AMP:
             layer->amp = value;
+            break;
+        case LAYER_REC:
+            if (button == 1 && !layer->recording) {
+                layer->playing = !layer->playing;
+            } else if (button == 2) {
+                layer->recording = !layer->recording;
+                layer->playing = !layer->recording;
+                if (layer->recording) {
+                    clear_recorder(layer->recorder);
+                }
+            }
             break;
         case OSC_SELECT:
             layer->selectedOsc = button;
@@ -601,6 +630,21 @@ void page_next_buffer(Page *page, double *samples) {
     for (int i=0; i < BUFFER_SAMPLES; i++) {
         samples[i] *= page->amp;
         samples[i] /= 4;
+    }
+
+    // Tick recorder
+    if (page->recording && page->recorder->input_count > 0) {
+        recorder_tick(page->recorder, 1);
+    } else if (page->playing) {
+        Recorder *rec_ptr = page->recorder;
+        recorder_tick(rec_ptr, 0);
+        for (int i=0; i < rec_ptr->input_count; i++) {
+            if (rec_ptr->inputs[i]->tick_played == rec_ptr->play_tick) {
+                page_process_input(page,
+                                   rec_ptr->inputs[i]->value[0],
+                                   rec_ptr->inputs[i]->value[1], -1);
+            }
+        }
     }
 }
 

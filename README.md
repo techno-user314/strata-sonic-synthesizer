@@ -6,7 +6,7 @@ SoundForge is a digital audio synthesizer designed to allow simple music creatio
 ## Features
 - SoundForge creates sound via subtractive synthesis.
 - SoundForge currently supports up to 25 voices per layer. In the future, this will be user defined so that it can be customized to the user's computer's architechture capabilities.
-- There are four distinct, toggleable layers. Each layer has it's own customizable oscillators, effectively acting like four seperate synthesizers. This feature can be used to toggle between four setting banks and, in future updates, may be able to loop a background harmony.
+- There are four distinct, toggleable layers. Each layer has it's own customizable oscillators, effectively acting like four seperate synthesizers. Each layer has a record feature, and allows you to record, and than loop, a background harmony. This feature can be used as a toggle between four settings banks.
 - Every one of the 16 oscillators has it's own filter and waveform selection, along with it's own independant envelopes and modulators for amplitude, pitch shifting, and filter cutoff frequancy.
 
 ## Installation

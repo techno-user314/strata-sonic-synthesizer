@@ -15,7 +15,7 @@ Here are the steps to install and begin using SoundForge:
 2. Install the necessary Python libraries with `pip install rtmidi-python pyaudio`
 3. Clone this repo.
 4. Compile the files in "src/c_synth" into a shared library called "libcsynth".
-    - Using GCC on a Linux system, this command would be: `gcc -shared -o libcsynth.so -fPIC control.c synthesis.c`
+    - Using GCC on a Linux system, this command would be: `gcc -shared -o libcsynth.so -fPIC control.c synthesis.c recorder.c`
 5. Run main.py with a Python interperator running Python 3.11+
 > [!NOTE]
 > SoundForge uses PortAudio19 as the audio interace. If Python is throwing exceptions related to pyaudio, it may be fixed by installing PortAudio19.

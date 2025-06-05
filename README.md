@@ -42,24 +42,3 @@ Possible bindings include, but are not limited to:
 [^2]: It is also possible to pause the recording playback.  
 [^3]: It is possible to adjust the pitch offset in units of cents, steps and octaves.
 [^4]: There are several bindings for this that vary by modulator. For example, the low frequancy oscillator two settings: speed and amplitude, but an envelope has four: attack, decay, sustain, release.  
-
-## Coming Soon
-- [ ] Better usage documentation
-
-Approximate Update Roadmap:
-- [x] 1.0.0 Make DSPcmath more efficient
-- [x] 1.0.1 Add exit button
-- [x] 1.0.1 Sync the release of pitch/filter with amp's
-- [x] 1.0.2 Fix page bug
-- [x] 1.0.3 Fix what happens when page is changed before note is released
-- [x] 1.0.4 Fix pitch octave shift always going super high freq
-- [x] 1.0.5 Fix LFO amplitude effect
-- [x] 1.1.0 Add unison
-- [x] 1.1.1 Clean up input processing method
-- [x] 1.1.2 Make voice numbers a constant, not a magic number
-- [x] 1.2.0 Add recorder
-- [ ] 1.3.0 Add noise oscillator
-- [ ] 1.3.1 Implement more intuitive input mapping
-- [ ] 1.4.0 Add pitch-determined amplitude
-- [ ] 1.5.0 Add support for stereo/panning
-- [ ] 2.0.0 Allow for multithreading

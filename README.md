@@ -18,7 +18,7 @@ Here are the steps to install and begin using SoundForge:
     - Using GCC on a Linux system, this command would be: `gcc -shared -o libcsynth.so -fPIC control.c synthesis.c recorder.c`
 5. Run main.py with a Python interperator running Python 3.11+
 > [!NOTE]
-> SoundForge uses PortAudio19 as the audio interace. If Python is throwing exceptions related to pyaudio, it may be fixed by installing PortAudio19.
+> SoundForge uses PortAudio19 as the audio interface. If Python is throwing exceptions related to pyaudio, it may be fixed by installing PortAudio19.
 > On Linux systems: `sudo apt install portaudio19-dev`
 
 ## Usage

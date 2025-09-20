@@ -1,12 +1,12 @@
 """
-This is SoundForge: A digital subtractive synthesiser program
+This is StrataSonic: A digital subtractive synthesiser program
 that is semi-polyphonic, and has built-in audio recording and layering.
 
 Copyright (C) 2025  Zach Harwood
 
-This file is part of SoundForge
+This file is part of StrataSonic
 
-SoundForge is a free software: you can redistribute it and/or modify
+StrataSonic is a free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
@@ -80,7 +80,7 @@ def audio_callback(in_data, frame_count, time_info, status):
 
 
 # Main loop
-print("Setting up SoundForge - ")
+print("Setting up StrataSonic - ")
 print("Opening MIDI device...")
 midiin, port_name = open_midiinput(1)
 midiin.set_callback(MidiInputHandler(port_name))
